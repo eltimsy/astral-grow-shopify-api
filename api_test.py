@@ -1,7 +1,7 @@
 import sys
 sys.path.insert(0, '/Users/TimmyC/Desktop/astral-grow-shopify-api')
 
-from excel_utils.excel_data import get_excel_sheet
+from excel_utils.excel_data import get_excel_sheet, make_store
 from secrets.secrets import (
     API_KEY,
     API_PASSWORD,
@@ -25,8 +25,6 @@ details = get_product_details(shopify, test_id, variant_id)
 print(details)
 
 work_sheet = get_excel_sheet('excelsheets/test.xlsx', 'test')
-rows = work_sheet.rows
-for row in rows:
-    for cell in row:
-        print(cell.value)
 
+store = make_store('Astral Grow', work_sheet)
+print(store.products)
