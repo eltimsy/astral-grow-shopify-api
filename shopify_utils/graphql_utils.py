@@ -1,5 +1,6 @@
 # Need to figure out how to authorize access for Graphql
 
+
 def get_product_graphql(variant_id, shopify):
     client = shopify.GraphQL()
     query = '''

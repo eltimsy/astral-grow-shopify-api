@@ -1,5 +1,6 @@
 # Functions to access shopify REST API
 
+
 def get_inventory_item(shopify, inventory_item_id):
     return shopify.InventoryItem.find(inventory_item_id)
 

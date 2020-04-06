@@ -1,0 +1,2 @@
+COST_ROW = 'D'
+PRICE_ROW = 'E'
