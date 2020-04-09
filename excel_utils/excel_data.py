@@ -1,6 +1,4 @@
-from openpyxl import load_workbook
-
-from excel_utils.excel_consts import COST_ROW, PRICE_ROW
+from excel_utils.excel_consts import COST_COL, PRICE_COL, MARGIN_TO_LOW
 # Functions to help grab and write excel data to xlsx files
 
 
@@ -11,8 +9,24 @@ class Store:
         self.name = name
         self.products = {}
 
-    def add_product(self, variant_id, product_id, name, cost, price, row_id):
-        self.products[name] = Product(variant_id, product_id, name, cost, price, row_id)
+    def add_product(
+        self, variant_id, product_id, name,
+        cost, price, fba_fee, send_fee, row_id,
+    ):
+        amazon_fee = price * .15
+
+        # TO FIX need to find a way to use formulas
+        try:
+            profit = price - amazon_fee - fba_fee - send_fee - cost
+        except TypeError:
+            profit = 0
+
+        margin = profit / price
+        self.products[name] = Product(
+            variant_id, product_id, name, cost,
+            price, amazon_fee, fba_fee, send_fee,
+            profit, margin, row_id,
+        )
         return self.products[name]
 
     def change_product(self, name, cost, price, worksheet):
@@ -30,48 +44,35 @@ class Store:
 class Product:
     ''' Template for each prdocut row in excel file '''
 
-    def __init__(self, variant_id, product_id, name, cost, price, row_id):
+    def __init__(
+        self, variant_id, product_id, name, cost,
+        price, amazon_fee, fba_fee, send_fee, profit,
+        margin, row_id,
+    ):
         self.variant_id = variant_id
         self.product_id = product_id
         self.name = name
         self.cost = cost
         self.price = price
+        self.amazon_fee = amazon_fee
+        self.fba_fee = fba_fee
+        self.send_fee = send_fee
+        self.profit = profit
+        self.margin = margin
         # This is the row number of the line in excel
         self.row_id = str(row_id)
 
     def edit_product(self, cost, price, worksheet):
+        ''' Change data on excel sheet for a product '''
         self.cost = cost
         self.price = price
-        worksheet[COST_ROW + self.row_id] = cost
-        worksheet[PRICE_ROW + self.row_id] = price
+        worksheet[COST_COL + self.row_id] = cost
+        worksheet[PRICE_COL + self.row_id] = price
         return self
 
-
-def get_excel_data(location, worksheet):
-    ''' Grab the worksheet based on where the file and name of the worksheet '''
-
-    excel_file = load_workbook(filename=location)
-    excel_sheet = excel_file[worksheet]
-    return excel_file, excel_sheet
-
-
-def make_store(name, excel_sheet):
-    ''' Build the store class with all the products included '''
-
-    current_store = Store(name)
-    rows = excel_sheet.rows
-
-    # Skip first line since it is the headers
-    next(rows)
-    for row in rows:
-        if row[0].value:
-            current_store.add_product(
-                row[0].value,
-                row[1].value,
-                row[2].value,
-                row[3].value,
-                row[4].value,
-                row[0].row,
-            )
-
-    return current_store
+    def check_margin(self):
+        ''' Check if the price margin is worth it '''
+        if self.margin < .20:
+            return MARGIN_TO_LOW
+        else:
+            return False
