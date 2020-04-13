@@ -1,7 +1,20 @@
-# Astral Grow Shopify API tests
+# Astral Grow Shopify API
 
-Building some tests to see what I can pull from shopify API
+The main goal of this project is to integrate shopify data with our excel amazon data.
 
-For secrets create a folder called secrets and a fill called secrets.py.  You will need to add your shopify details inside
+## How it works
 
-In the future I will be adding some scripts that all you to edit an excel document based on the shopify data.
+The script will first create a store object with all the products in the excel sheet.
+Next it will try to update the excelsheet with shopify data. (WIP)
+
+## Installation
+
+The script is built using python 3.8
+
+- Install requirements from requirements.txt
+- Create a secrets folder with a secrets.py fill and add your shopify details to it
+    - Things to add: API_KEY, API_PASSWORD, API_VERSION, SHOP_NAME
+
+## How to run
+
+The script currently is run in the terminal with `python api_test.py`
