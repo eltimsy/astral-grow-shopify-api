@@ -9,6 +9,7 @@ from excel_utils.excel_consts import (
     PROD_PRICE,
     FBA_FEE,
     SEND_FEE,
+    combos,
 )
 
 
@@ -29,10 +30,10 @@ def make_store(name, excel_sheet):
     # Skip first line since it is the headers
     next(rows)
     for row in rows:
-        if row[0].value:
+        if row[PROD_ID].value:
             # TO FIX think of a way to use formulas
-            if row[0].value == 'Combo':
-                prod_cost = 26.69
+            if row[PROD_ID].value == 'Combo':
+                prod_cost = combos[row[PROD_NAME].value]
             else:
                 prod_cost = row[PROD_COST].value
 
